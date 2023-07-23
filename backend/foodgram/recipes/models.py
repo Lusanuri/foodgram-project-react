@@ -108,8 +108,6 @@ class ShoppingCart(models.Model):
         Recipe,
         verbose_name="Peцепт для корзины",
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
     )
 
 
@@ -125,6 +123,4 @@ class Favorite(models.Model):
         Recipe,
         verbose_name="Рецепт для избранного",
         on_delete=models.CASCADE,
-        blank=True,
-        null=True,
     )
