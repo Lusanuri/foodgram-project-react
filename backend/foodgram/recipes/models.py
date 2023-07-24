@@ -1,6 +1,9 @@
 from django.core.validators import MinValueValidator, RegexValidator
-from users.models import User
+from django.contrib.auth import get_user_model 
 from django.db import models
+from django.contrib.auth.models import User
+from django.conf import settings
+
 
 
 class Tag(models.Model):
@@ -46,11 +49,12 @@ class Ingredient(models.Model):
 class Recipe(models.Model):
     """Рецепт"""
     author = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name="Автор рецепта",
         on_delete=models.CASCADE,
         related_name="recipes"
     )
+
     name = models.CharField(verbose_name="name рецепта", max_length=200)
     image = models.ImageField(verbose_name="Картинка", upload_to="recipes/")
     text = models.TextField(verbose_name="Описание рецепта")
@@ -99,7 +103,7 @@ class RecipeIngregient(models.Model):
 class ShoppingCart(models.Model):
     """Корзина с рецептами"""
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name="Пользователь",
         on_delete=models.CASCADE,
         related_name="shopping_cart"
@@ -114,7 +118,7 @@ class ShoppingCart(models.Model):
 class Favorite(models.Model):
     """Избранное"""
     user = models.ForeignKey(
-        User,
+        settings.AUTH_USER_MODEL,
         verbose_name="Пользователь",
         on_delete=models.CASCADE,
         related_name="favorites"

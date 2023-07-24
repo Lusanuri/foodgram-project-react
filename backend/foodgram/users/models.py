@@ -11,11 +11,12 @@ class User(AbstractUser):
         max_length=254
     )
     username = models.CharField(
-        verbose_name="name пользователя",
+        verbose_name="Имя пользователя",
         unique=True,
         max_length=150,
-        validators=[RegexValidator(regex="^[\w.@+-]+\z")]
+        validators=[RegexValidator(regex=r"^[\w.@+-]+$")]
     )
+    password = models.CharField(verbose_name="Пароль", max_length=150)
     first_name = models.CharField(verbose_name="Имя", max_length=150)
     last_name = models.CharField(verbose_name="Фамилия", max_length=150)
 

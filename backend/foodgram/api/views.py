@@ -4,11 +4,19 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from recipes.models import Recipe, Ingredient, Tag
-from .serializers import RecipeSerializer, IngredientSerializer, TagSerializer
+from .serializers import (
+    TagSerializer, RecipeSerializer, 
+    IngredientSerializer, RecipePostSerializer
+)
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+
+    def get_serializer_class(self):
+        if self.request.method in ["POST", "PUT", "PATCH"]:
+            return RecipePostSerializer
+        return RecipeSerializer
 
     @action(detail=False, permission_classes=[IsAuthenticated],)
     def download_shopping_cart(self, request):
