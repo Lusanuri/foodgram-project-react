@@ -6,28 +6,17 @@ from .models import Follow
 
 User = get_user_model()
 
-class CustomUserSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
-    is_subscribed = serializers.SerializerMethodField()
+class CustomUserCreateSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
         model = User
 
         fields = (
             "email", "id", "username", "password", "first_name",
-            "last_name", "is_subscribed"
+            "last_name"
         )
 
-    def get_is_subscribed(self, obj):
-        request_user = self.context["request"].user
-        if not request_user.is_authenticated:
-            return False
-        subscription = Follow.objects.get(
-            user=request_user.id, following=obj.id
-        )
-        if subscription:
-            return True
-        return False
 
     def create(self, validated_data):
         user = User.objects.create(
@@ -39,6 +28,27 @@ class CustomUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
+class CustomUserSerializer(CustomUserCreateSerializer):
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "email", "id", "username", "password",
+            "first_name", "last_name", "is_subscribed"
+        )
+
+    def get_is_subscribed(self, obj):
+        request_user = self.context["request"].user
+        if not request_user.is_authenticated:
+            return False
+        if Follow.objects.filter(
+            user=request_user.id, following=obj.id
+        ).exists():
+            return True
+        return False
+
 
 class SubscriptionSerializer(serializers.ModelSerializer):
     recipes = RecipeSerializer
