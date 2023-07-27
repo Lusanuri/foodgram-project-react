@@ -1,7 +1,6 @@
 from rest_framework import serializers
 
 from django.contrib.auth import get_user_model
-from api.serializers import RecipeSerializer
 from .models import Follow
 
 User = get_user_model()
@@ -48,10 +47,3 @@ class CustomUserSerializer(CustomUserCreateSerializer):
         ).exists():
             return True
         return False
-
-
-class SubscriptionSerializer(serializers.ModelSerializer):
-    recipes = RecipeSerializer
-
-    class Meta:
-        model = User

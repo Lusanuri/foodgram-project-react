@@ -20,6 +20,9 @@ class User(AbstractUser):
     first_name = models.CharField(verbose_name="Имя", max_length=150)
     last_name = models.CharField(verbose_name="Фамилия", max_length=150)
 
+    class Meta:
+        ordering = ["-id"]
+
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
 
@@ -38,6 +41,9 @@ class Follow(models.Model):
         related_name="following",
         on_delete=models.CASCADE
     )
+
+    class Meta:
+        ordering = ["-id"]
 
     def __str__(self):
         return f"{self.user} подписан(а) на {self.following}"
