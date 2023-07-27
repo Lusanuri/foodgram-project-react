@@ -1,8 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.db.models import Count
-
-from recipes.models import Recipe
 from .models import Follow
 
 User = get_user_model()
@@ -72,4 +70,4 @@ class SubscriptionSerializer(CustomUserSerializer):
 
     def get_recipes_count(self, obj):
         users = User.objects.annotate(Count("recipes"))
-        return users.get(id=obj.id).recipes__count
+        return users.get(id=obj.id).recipes_count

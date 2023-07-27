@@ -121,8 +121,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         self.fields["tags"] = TagSerializer(many=True)
         representation = super().to_representation(instance)
-        representation["ingredients"] = IngredientInRecipeResponseSerializer(
+        RecipeIngredient.objects.select_related("ingredient").filter(
             RecipeIngredient.objects.prefetch_related("ingredient").filter(
                 recipe=instance), many=True
-            ).data
+            )
         return representation
