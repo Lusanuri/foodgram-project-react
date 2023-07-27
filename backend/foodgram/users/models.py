@@ -21,7 +21,7 @@ class User(AbstractUser):
     last_name = models.CharField(verbose_name="Фамилия", max_length=150)
 
     class Meta:
-        ordering = ["-id"]
+        ordering = ["id"]
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"

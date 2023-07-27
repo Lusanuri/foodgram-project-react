@@ -13,17 +13,18 @@ User = get_user_model()
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
 
-    @action(detail=False, permission_classes=[IsAuthenticated],)
+    @action(detail=False, permission_classes=[IsAuthenticated], )
     def subscriptions(self, request):
         user = self.request.user
         queryset = user.follower.select_related("following").all()
-        subscriptions = [item.following for item in queryset]
+        pages = self.paginate_queryset(queryset)
+        subscriptions = [item.following for item in pages]
         serializer = SubscriptionSerializer(
             subscriptions,
             many=True,
             context={"request": request}
         )
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        return self.get_paginated_response(serializer.data)
 
 
     @action(detail=True,
