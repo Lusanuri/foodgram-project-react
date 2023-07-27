@@ -21,7 +21,9 @@ class User(AbstractUser):
     last_name = models.CharField(verbose_name="Фамилия", max_length=150)
 
     class Meta:
-        ordering = ["id"]
+        ordering = ["email"]
+        verbose_name = "Пользователь"
+        verbose_name_plural = "Пользователи"
 
     def __str__(self):
         return f"{self.first_name} {self.last_name}"
@@ -44,6 +46,14 @@ class Follow(models.Model):
 
     class Meta:
         ordering = ["-id"]
+        verbose_name = "Подписки"
+        verbose_name_plural = "Подписки"
+        constraints = [
+            models.UniqueConstraint(
+                fields=["user", "following"],
+                name="unique_subscription"
+            )
+        ]
 
     def __str__(self):
         return f"{self.user} подписан(а) на {self.following}"

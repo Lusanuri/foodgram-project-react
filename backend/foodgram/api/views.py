@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 
 from recipes.models import Recipe, Tag, Ingredient, ShoppingCart, Favorite
+from .permissions import AuthorOrReadOnly
 from .serializers import (
     TagSerializer, SmallRecipeSerializer,
     IngredientSerializer, RecipeSerializer,
@@ -16,6 +17,7 @@ from .filters import RecipeFilter
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = RecipeSerializer
+    permission_classes = [AuthorOrReadOnly, ]
     http_method_names = ["get", "post", "patch", "delete"]
     filterset_class = RecipeFilter
     filter_backends = [DjangoFilterBackend, ]
@@ -67,7 +69,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=True,
             methods=["post", "delete"],
-            permission_classes=[IsAuthenticated])
+            permission_classes=[IsAuthenticated],)
     def shopping_cart(self, request, pk=None):
         user = self.request.user
         try:
