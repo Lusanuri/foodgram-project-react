@@ -1,6 +1,8 @@
 from rest_framework import serializers
-
 from django.contrib.auth import get_user_model
+from django.db.models import Count
+
+from recipes.models import Recipe
 from .models import Follow
 
 User = get_user_model()
@@ -34,8 +36,8 @@ class CustomUserSerializer(CustomUserCreateSerializer):
     class Meta:
         model = User
         fields = (
-            "email", "id", "username", "password",
-            "first_name", "last_name", "is_subscribed"
+            "email", "id", "username", "first_name",
+            "last_name", "is_subscribed"
         )
 
     def get_is_subscribed(self, obj):
@@ -47,3 +49,27 @@ class CustomUserSerializer(CustomUserCreateSerializer):
         ).exists():
             return True
         return False
+
+class SubscriptionSerializer(CustomUserSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "email", "id", "username", "first_name", "last_name",
+            "is_subscribed", "recipes", "recipes_count"
+        )
+
+    def get_recipes(self, obj):
+        from api.serializers import SmallRecipeSerializer
+        limit = self.context["request"].query_params.get("recipes_limit")
+        recipe = obj.recipes.all()
+        if limit:
+            recipe = recipe[:int(limit)]
+        serializer = SmallRecipeSerializer(recipe, many=True)
+        return serializer.data
+
+    def get_recipes_count(self, obj):
+        users = User.objects.annotate(Count("recipes"))
+        return users.get(id=obj.id).recipes__count
