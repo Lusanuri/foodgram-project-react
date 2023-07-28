@@ -42,7 +42,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
     @action(detail=False,
             methods=["get"],
-            permission_classes=[IsAuthenticated],)
+            permission_classes=[IsAuthenticated])
     def download_shopping_cart(self, request):
         cart = request.user.shopping_cart.select_related("recipe")
         shopping_cart = [item.recipe for item in cart]
@@ -82,7 +82,7 @@ class ShoppingCartViewSet(viewsets.ViewSet):
             recipe = Recipe.objects.get(id=pk)
         except Recipe.DoesNotExist:
             return Response(
-                {"errors": ("Такого рецепта не существует. " + 
+                {"errors": ("Такого рецепта не существует. " +
                             "Проверьте, что передали правильный id.")},
                 status=status.HTTP_400_BAD_REQUEST
             )

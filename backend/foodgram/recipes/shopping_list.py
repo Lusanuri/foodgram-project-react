@@ -10,7 +10,7 @@ def get_shopping_list(shopping_cart):
             else:
                 list_of_ingredients[item.ingredient] = item.amount
     for ingredient, amount in list_of_ingredients.items():
-        content += (f"* {ingredient} ({ingredient.measurement_unit})" + 
+        content += (f"* {ingredient} ({ingredient.measurement_unit})"
                     f" — {amount}\n")
     content += "\n--------------------------------------"
     return content
