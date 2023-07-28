@@ -1,8 +1,8 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
-from rest_framework import serializers
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from rest_framework import serializers
 
 from users.serializers import CustomUserSerializer
 
@@ -19,7 +19,7 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "color", "slug")
 
 
-class IngredientInRecipeResponseSerializer(serializers.ModelSerializer):
+class RecipeIngredientResponseSerializer(serializers.ModelSerializer):
     id = serializers.PrimaryKeyRelatedField(
         source="ingredient",
         queryset=Ingredient.objects.all()
@@ -34,7 +34,7 @@ class IngredientInRecipeResponseSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "measurement_unit", "amount")
 
 
-class IngredientInRecipeSerializer(serializers.ModelSerializer):
+class RecipeIngredientSerializer(serializers.ModelSerializer):
     id = serializers.IntegerField()
 
     class Meta:
@@ -50,7 +50,7 @@ class SmallRecipeSerializer(serializers.ModelSerializer):
 
 class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
-    ingredients = IngredientInRecipeSerializer(many=True)
+    ingredients = RecipeIngredientSerializer(many=True)
     image = Base64ImageField()
     is_favorited = serializers.BooleanField(default=False)
     is_in_shopping_cart = serializers.BooleanField(default=False)
@@ -65,14 +65,17 @@ class RecipeSerializer(serializers.ModelSerializer):
         RecipeIngredient.objects.bulk_create([
             RecipeIngredient(
                 recipe=recipe,
-                ingredient=Ingredient.objects.get(id=ingredient["id"]),
+                ingredient_id=ingredient["id"],
                 amount=ingredient["amount"]
             ) for ingredient in ingredients])
 
     @transaction.atomic
     def create(self, validated_data):
         ingredients = validated_data.pop("ingredients")
+        print(ingredients)
         tags = validated_data.pop("tags")
+        is_favorited = validated_data.pop("is_favorited")
+        is_in_shopping_cart = validated_data.pop("is_in_shopping_cart")
         recipe = Recipe.objects.create(
             **validated_data,
             author=self.context["request"].user
@@ -107,7 +110,7 @@ class RecipeSerializer(serializers.ModelSerializer):
         queryset = RecipeIngredient.objects.select_related(
             "ingredient"
         ).filter(recipe=instance)
-        representation["ingredients"] = IngredientInRecipeResponseSerializer(
+        representation["ingredients"] = RecipeIngredientResponseSerializer(
                         queryset, many=True
         ).data
         return representation

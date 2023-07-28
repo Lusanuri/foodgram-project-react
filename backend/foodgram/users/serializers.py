@@ -1,12 +1,13 @@
 from django.contrib.auth import get_user_model
 from django.db.models import Count
+from djoser.serializers import UserCreateSerializer
 from rest_framework import serializers
 
 from .models import Follow
 
 User = get_user_model()
 
-class CustomUserCreateSerializer(serializers.ModelSerializer):
+class CustomUserCreateSerializer(UserCreateSerializer):
     password = serializers.CharField(write_only=True, required=True)
 
     class Meta:
