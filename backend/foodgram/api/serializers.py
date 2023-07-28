@@ -13,6 +13,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = ("id", "name", "measurement_unit")
 
+
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tag
@@ -73,8 +74,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients = validated_data.pop("ingredients")
         tags = validated_data.pop("tags")
-        is_favorited = validated_data.pop("is_favorited")
-        is_in_shopping_cart = validated_data.pop("is_in_shopping_cart")
+       # is_favorited = validated_data.pop("is_favorited")
+       # is_in_shopping_cart = validated_data.pop("is_in_shopping_cart")
         recipe = Recipe.objects.create(
             **validated_data,
             author=self.context["request"].user
@@ -102,7 +103,6 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-
     def to_representation(self, instance):
         self.fields["tags"] = TagSerializer(many=True)
         representation = super().to_representation(instance)
@@ -110,6 +110,6 @@ class RecipeSerializer(serializers.ModelSerializer):
             "ingredient"
         ).filter(recipe=instance)
         representation["ingredients"] = RecipeIngredientResponseSerializer(
-                        queryset, many=True
+            queryset, many=True
         ).data
         return representation

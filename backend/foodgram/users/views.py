@@ -10,6 +10,7 @@ from .serializers import SubscriptionSerializer
 
 User = get_user_model()
 
+
 class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
 
@@ -26,7 +27,6 @@ class CustomUserViewSet(UserViewSet):
         )
         return self.get_paginated_response(serializer.data)
 
-
     @action(detail=True,
             methods=["post", "delete"],
             permission_classes=[IsAuthenticated],)
@@ -36,15 +36,15 @@ class CustomUserViewSet(UserViewSet):
             author = User.objects.get(id=id)
         except User.DoesNotExist:
             return Response(
-                {"errors": ("Такого пользователя не существует. " +
+                {"errors": ("Такого пользователя не существует. " + 
                             "Проверьте, что передали правильный id.")},
                 status=status.HTTP_400_BAD_REQUEST
             )
         if user.id == author.id:
             return Response(
-                    {"errors": ("Нельзя подписаться/отписаться. Проверьте, " +
+                    {"errors": ("Нельзя подписаться/отписаться. Проверьте, " + 
                                 "что передали id, отличный от собственного.")},
-                    status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST
                 )
         is_subscribed = Follow.objects.filter(
             user=user, following=author

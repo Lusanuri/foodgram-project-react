@@ -7,6 +7,7 @@ from .models import Follow
 
 User = get_user_model()
 
+
 class CustomUserCreateSerializer(UserCreateSerializer):
     password = serializers.CharField(write_only=True, required=True)
 
@@ -18,7 +19,6 @@ class CustomUserCreateSerializer(UserCreateSerializer):
             "last_name"
         )
 
-
     def create(self, validated_data):
         user = User.objects.create(
             email=validated_data["email"],
@@ -29,6 +29,7 @@ class CustomUserCreateSerializer(UserCreateSerializer):
         user.set_password(validated_data["password"])
         user.save()
         return user
+
 
 class CustomUserSerializer(CustomUserCreateSerializer):
     is_subscribed = serializers.SerializerMethodField(read_only=True)
@@ -49,6 +50,7 @@ class CustomUserSerializer(CustomUserCreateSerializer):
         ).exists():
             return True
         return False
+
 
 class SubscriptionSerializer(CustomUserSerializer):
     recipes = serializers.SerializerMethodField()

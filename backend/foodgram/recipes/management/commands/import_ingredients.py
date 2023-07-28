@@ -9,6 +9,7 @@ TABLES = {
     Ingredient: "ingredients.csv"
 }
 
+
 class Command(BaseCommand):
     def handle(self, *args, **options):
         filename = f"{settings.BASE_DIR}/../data/ingredients.csv"

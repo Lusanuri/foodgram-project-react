@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 User = get_user_model()
+
+
 class Tag(models.Model):
     """Тег рецепта"""
     name = models.CharField(
@@ -28,7 +30,8 @@ class Tag(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class Ingredient(models.Model):
     """Ингредиент для рецепта"""
     name = models.CharField(
@@ -47,7 +50,8 @@ class Ingredient(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+
 class Recipe(models.Model):
     """Рецепт"""
     author = models.ForeignKey(
@@ -89,6 +93,7 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class RecipeIngredient(models.Model):
     """Наличие определенного ингредиента в определенном рецепте"""

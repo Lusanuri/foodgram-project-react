@@ -13,6 +13,7 @@ from .permissions import AuthorOrReadOnly
 from .serializers import (IngredientSerializer, RecipeSerializer,
                           SmallRecipeSerializer, TagSerializer)
 
+
 class RecipeViewSet(viewsets.ModelViewSet):
     serializer_class = RecipeSerializer
     permission_classes = [AuthorOrReadOnly, ]
@@ -84,7 +85,7 @@ class ShoppingCartViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
         return recipe
-    
+
     def post(self, request, pk=None):
         user = request.user
         recipe = self.check_object(pk)
