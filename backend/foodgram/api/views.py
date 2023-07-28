@@ -84,7 +84,7 @@ class ShoppingCartViewSet(viewsets.ViewSet):
             return Response(
                 {"errors": ("Такого рецепта не существует. " +
                             "Проверьте, что передали правильный id.")},
-                status=status.HTTP_400_BAD_REQUEST
+                status=status.HTTP_400_BAD_REQUEST,
             )
         return recipe
 
