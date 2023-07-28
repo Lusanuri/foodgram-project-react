@@ -1,4 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Exists, OuterRef
 from django.http import HttpResponse
 from django_filters.rest_framework import DjangoFilterBackend
@@ -23,7 +22,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = Recipe.objects.select_related("author").prefetch_related(
             "ingredients"
-        ).all()
+        )
         user = self.request.user
         if user.is_authenticated:
             favorite_recipe = Favorite.objects.filter(
@@ -32,7 +31,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             recipe_in_cart = ShoppingCart.objects.filter(
                 user=user, recipe__pk=OuterRef("pk")
             )
-            return Recipe.objects.annotate(
+            return queryset.annotate(
                 is_favorited=Exists(favorite_recipe),
                 is_in_shopping_cart=Exists(recipe_in_cart)
             )
@@ -42,7 +41,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             methods=["get"],
             permission_classes=[IsAuthenticated],)
     def download_shopping_cart(self, request):
-        cart = request.user.shopping_cart.select_related("recipe").all()
+        cart = request.user.shopping_cart.select_related("recipe")
         shopping_cart = [item.recipe for item in cart]
         content = get_shopping_list(shopping_cart)
         response = HttpResponse(content, content_type="text/plain")
@@ -56,7 +55,7 @@ class ShoppingCartViewSet(viewsets.ViewSet):
     permission_classes = [IsAuthenticated]
 
     def create_relation(self, user, recipe, model, str_name):
-        obj, created = model.objects.get_or_create(user=user, recipe=recipe)
+        _, created = model.objects.get_or_create(user=user, recipe=recipe)
         if not created:
             return Response(
                 {"errors": f"Рецепт уже в {str_name}"},
@@ -67,14 +66,12 @@ class ShoppingCartViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def delete_relation(self, user, recipe, model, str_name):
-        try:
-            obj = model.objects.get(user=user, recipe=recipe)
-        except model.DoesNotExist:
+        row_cnt, _ = model.objects.filter(user=user, recipe=recipe).delete()
+        if not row_cnt:
             return Response(
                 {"errors": f"Такого рецепта нет в {str_name}"},
                 status=status.HTTP_400_BAD_REQUEST
             )
-        obj.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def check_object(self, pk):

@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.shortcuts import get_object_or_404
 from djoser.views import UserViewSet
 from rest_framework import status
 from rest_framework.decorators import action
@@ -17,7 +16,7 @@ class CustomUserViewSet(UserViewSet):
     @action(detail=False, permission_classes=[IsAuthenticated], )
     def subscriptions(self, request):
         user = self.request.user
-        queryset = user.follower.select_related("following").all()
+        queryset = user.follower.select_related("following")
         pages = self.paginate_queryset(queryset)
         subscriptions = [item.following for item in pages]
         serializer = SubscriptionSerializer(
@@ -34,8 +33,8 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, id=None):
         user = self.request.user
         try:
-            author = get_object_or_404(User, id=id)
-        except Exception:
+            author = User.objects.get(id=id)
+        except User.DoesNotExist:
             return Response(
                 {"errors": ("Такого пользователя не существует. " +
                             "Проверьте, что передали правильный id.")},
