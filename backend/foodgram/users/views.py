@@ -36,14 +36,14 @@ class CustomUserViewSet(UserViewSet):
             author = User.objects.get(id=id)
         except User.DoesNotExist:
             return Response(
-                {"errors": ("Такого пользователя не существует. " +
-                            "Проверьте, что передали правильный id.")},
+                {"errors": ("Такого пользователя не существует. "
+                            + "Проверьте, что передали правильный id.")},
                 status=status.HTTP_400_BAD_REQUEST
             )
         if user.id == author.id:
             return Response(
-                {"errors": ("Нельзя подписаться/отписаться. Проверьте, " +
-                            "что передали id, отличный от собственного.")},
+                {"errors": ("Нельзя подписаться/отписаться. Проверьте, "
+                            + "что передали id, отличный от собственного.")},
                 status=status.HTTP_400_BAD_REQUEST
             )
         is_subscribed = Follow.objects.filter(
