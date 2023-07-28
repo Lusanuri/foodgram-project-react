@@ -1,8 +1,7 @@
 from django.db import transaction
 from drf_extra_fields.fields import Base64ImageField
 from rest_framework import serializers
-from recipes.models import (Favorite, Ingredient, Recipe, RecipeIngredient,
-                            ShoppingCart, Tag)
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 
 from users.serializers import CustomUserSerializer
@@ -53,8 +52,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     author = CustomUserSerializer(read_only=True)
     ingredients = IngredientInRecipeSerializer(many=True)
     image = Base64ImageField()
-    is_favorited = serializers.SerializerMethodField()
-    is_in_shopping_cart = serializers.SerializerMethodField()
+    is_favorited = serializers.BooleanField(default=False)
+    is_in_shopping_cart = serializers.BooleanField(default=False)
 
     class Meta:
         model = Recipe
@@ -101,27 +100,14 @@ class RecipeSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
 
-    def check_in_list(self, obj, model):
-        request_user = self.context["request"].user
-        if not request_user.is_authenticated:
-            return False
-        if model.objects.filter(
-            user=request_user.id, recipe=obj
-        ).exists():
-            return True
-        return False
-
-    def get_is_favorited(self, obj):
-        return self.check_in_list(obj, Favorite)
-
-    def get_is_in_shopping_cart(self, obj):
-        return self.check_in_list(obj, ShoppingCart)
 
     def to_representation(self, instance):
         self.fields["tags"] = TagSerializer(many=True)
         representation = super().to_representation(instance)
-        RecipeIngredient.objects.select_related("ingredient").filter(
-            RecipeIngredient.objects.prefetch_related("ingredient").filter(
-                recipe=instance), many=True
-            )
+        queryset = RecipeIngredient.objects.select_related(
+            "ingredient"
+        ).filter(recipe=instance)
+        representation["ingredients"] = IngredientInRecipeResponseSerializer(
+                        queryset, many=True
+        ).data
         return representation

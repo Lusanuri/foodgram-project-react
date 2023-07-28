@@ -2,7 +2,8 @@ from django.urls import include, path
 from rest_framework.routers import DefaultRouter
 
 from users.views import CustomUserViewSet
-from .views import IngredientViewSet, RecipeViewSet, TagViewSet
+from .views import (IngredientViewSet, RecipeViewSet, TagViewSet,
+                    ShoppingCartViewSet, FavoriteViewSet)
 
 router = DefaultRouter()
 
@@ -13,5 +14,9 @@ router.register(r"users", CustomUserViewSet, basename="users")
 
 urlpatterns = [
     path("auth/", include("djoser.urls.authtoken")),
+    path("recipes/<int:pk>/shopping_cart/",
+         ShoppingCartViewSet.as_view({"create": "post", "destroy": "delete"})),
+    path("recipes/<int:pk>/favorite/",
+         FavoriteViewSet.as_view({"create": "post", "destroy": "delete"})),
     path("", include(router.urls)),
 ]
