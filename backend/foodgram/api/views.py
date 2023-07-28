@@ -10,8 +10,10 @@ from recipes.shopping_list import get_shopping_list
 
 from .filters import RecipeFilter
 from .permissions import AuthorOrReadOnly
-from .serializers import (IngredientSerializer, RecipeSerializer,
-                          SmallRecipeSerializer, TagSerializer)
+from .serializers import (
+    IngredientSerializer, RecipeSerializer,
+    SmallRecipeSerializer, TagSerializer,
+)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -80,7 +82,7 @@ class ShoppingCartViewSet(viewsets.ViewSet):
             recipe = Recipe.objects.get(id=pk)
         except Recipe.DoesNotExist:
             return Response(
-                {"errors": ("Такого рецепта не существует. " +
+                {"errors": ("Такого рецепта не существует. " + 
                             "Проверьте, что передали правильный id.")},
                 status=status.HTTP_400_BAD_REQUEST
             )

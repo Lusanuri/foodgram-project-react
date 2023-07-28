@@ -74,8 +74,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients = validated_data.pop("ingredients")
         tags = validated_data.pop("tags")
-       # is_favorited = validated_data.pop("is_favorited")
-       # is_in_shopping_cart = validated_data.pop("is_in_shopping_cart")
+        # is_favorited = validated_data.pop("is_favorited")
+        # is_in_shopping_cart = validated_data.pop("is_in_shopping_cart")
         recipe = Recipe.objects.create(
             **validated_data,
             author=self.context["request"].user
