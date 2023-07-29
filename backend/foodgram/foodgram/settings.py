@@ -137,7 +137,7 @@ DJOSER = {
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
         'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']
-    },   
+    },
 }
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
