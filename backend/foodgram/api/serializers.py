@@ -1,16 +1,89 @@
+from django.contrib.auth import get_user_model
 from django.db import transaction
+from django.db.models import Count
+from djoser.serializers import UserCreateSerializer
 from drf_extra_fields.fields import Base64ImageField
-
-from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 from rest_framework import serializers
 
-from users.serializers import CustomUserSerializer
+from api.serializers import SmallRecipeSerializer
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
+from users.models import Follow
+
+User = get_user_model()
+
+
+class CustomUserCreateSerializer(UserCreateSerializer):
+    password = serializers.CharField(write_only=True, required=True)
+
+    class Meta:
+        model = User
+
+        fields = (
+            "email", "id", "username", "password", "first_name",
+            "last_name"
+        )
+
+    def create(self, validated_data):
+        user = User.objects.create(
+            email=validated_data["email"],
+            username=validated_data["username"],
+            first_name=validated_data["first_name"],
+            last_name=validated_data["last_name"],
+        )
+        user.set_password(validated_data["password"])
+        user.save()
+        return user
+
+
+class CustomUserSerializer(CustomUserCreateSerializer):
+    is_subscribed = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "email", "id", "username", "first_name",
+            "last_name", "is_subscribed"
+        )
+
+    def get_is_subscribed(self, obj):
+        request_user = self.context["request"].user
+        if not request_user.is_authenticated:
+            return False
+        if Follow.objects.filter(
+            user=request_user.id, following=obj.id
+        ).exists():
+            return True
+        return False
+
+
+class SubscriptionSerializer(CustomUserSerializer):
+    recipes = serializers.SerializerMethodField()
+    recipes_count = serializers.SerializerMethodField(read_only=True)
+
+    class Meta:
+        model = User
+        fields = (
+            "email", "id", "username", "first_name", "last_name",
+            "is_subscribed", "recipes", "recipes_count"
+        )
+
+    def get_recipes(self, obj):
+        limit = self.context["request"].query_params.get("recipes_limit")
+        recipe = obj.recipes.all()
+        if limit:
+            recipe = recipe[:int(limit)]
+        serializer = SmallRecipeSerializer(recipe, many=True)
+        return serializer.data
+
+    def get_recipes_count(self, obj):
+        users = User.objects.annotate(Count("recipes"))
+        return users.get(id=obj.id).recipes_count
 
 
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = "__all__"
+        fields = ("id", "name", "measurement_unit")
         read_only_fields = ("id", "name", "measurement_unit")
 
 
@@ -74,8 +147,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         ingredients = validated_data.pop("ingredients")
         tags = validated_data.pop("tags")
-        # is_favorited = validated_data.pop("is_favorited")
-        # is_in_shopping_cart = validated_data.pop("is_in_shopping_cart")
         recipe = Recipe.objects.create(
             **validated_data,
             author=self.context["request"].user
@@ -113,3 +184,5 @@ class RecipeSerializer(serializers.ModelSerializer):
             queryset, many=True
         ).data
         return representation
+
+

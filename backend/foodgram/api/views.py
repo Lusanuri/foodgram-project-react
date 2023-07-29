@@ -5,15 +5,14 @@ from rest_framework import filters, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
 from recipes.models import Favorite, Ingredient, Recipe, ShoppingCart, Tag
 from recipes.shopping_list import get_shopping_list
 
 from .filters import RecipeFilter
 from .permissions import AuthorOrReadOnly
-from .serializers import (
-    IngredientSerializer, RecipeSerializer,
-    SmallRecipeSerializer, TagSerializer,
-)
+from .serializers import (IngredientSerializer, RecipeSerializer,
+                          SmallRecipeSerializer, TagSerializer)
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
@@ -21,24 +20,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     permission_classes = [AuthorOrReadOnly, ]
     filterset_class = RecipeFilter
     filter_backends = [DjangoFilterBackend, ]
-
-    def get_queryset(self):
-        queryset = Recipe.objects.select_related("author").prefetch_related(
-            "ingredients"
-        )
-        user = self.request.user
-        if user.is_authenticated:
-            favorite_recipe = Favorite.objects.filter(
-                user=user, recipe__pk=OuterRef("pk")
-            )
-            recipe_in_cart = ShoppingCart.objects.filter(
-                user=user, recipe__pk=OuterRef("pk")
-            )
-            return queryset.annotate(
-                is_favorited=Exists(favorite_recipe),
-                is_in_shopping_cart=Exists(recipe_in_cart)
-            )
-        return queryset
+    queryset = Recipe.objects.all()
 
     @action(detail=False,
             methods=["get"],
