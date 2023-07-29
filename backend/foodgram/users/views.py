@@ -6,7 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Follow
-from .serializers import SubscriptionSerializer
+from api.serializers import SubscriptionSerializer
 
 User = get_user_model()
 
