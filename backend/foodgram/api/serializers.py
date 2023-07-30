@@ -24,7 +24,6 @@ class Base64ImageField(serializers.ImageField):
 class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
-
         fields = (
             "email", "id", "username", "password", "first_name",
             "last_name"
