@@ -1,5 +1,4 @@
 from django.contrib.auth.models import AbstractUser
-from django.core.validators import RegexValidator
 from django.db import models
 
 
@@ -10,17 +9,22 @@ class User(AbstractUser):
         unique=True,
         max_length=254
     )
-    username = models.CharField(
+    first_name = models.CharField(
         verbose_name="Имя пользователя",
-        unique=True,
         max_length=150,
-        validators=[RegexValidator(regex=r"^[\w.@+-]+$")]
+    )
+    last_name = models.CharField(
+        verbose_name="Фамилия пользователя",
+        max_length=150,
     )
 
     class Meta:
-        ordering = ["email"]
+        ordering = ["id"]
         verbose_name = "Пользователь"
         verbose_name_plural = "Пользователи"
+
+    def __str__(self):
+        return self.username
 
 
 class Follow(models.Model):
@@ -31,7 +35,7 @@ class Follow(models.Model):
         related_name="follower",
         on_delete=models.CASCADE
     )
-    following = models.ForeignKey(
+    author = models.ForeignKey(
         User,
         verbose_name="Автор рецептов для подписки",
         related_name="following",
@@ -44,10 +48,14 @@ class Follow(models.Model):
         verbose_name_plural = "Подписки"
         constraints = [
             models.UniqueConstraint(
-                fields=["user", "following"],
-                name="unique_subscription"
-            )
+                fields=["user", "author"],
+                name="unique_follow"
+            ),
+            models.CheckConstraint(
+                check=~models.Q(user=models.F("author")),
+                name="prevent_self_follow",
+            ),
         ]
 
     def __str__(self):
-        return f"{self.user} подписан(а) на {self.following}"
+        return f"{self.user} подписан(а) на {self.author}"

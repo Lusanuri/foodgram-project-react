@@ -1,14 +1,8 @@
-from django.urls import include, path
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 
-from .views import UserViewSet, login, token
-
-router = DefaultRouter()
-
-router.register("users", UserViewSet, basename="users")
+from .views import login, token
 
 urlpatterns = [
-    path("", include(router.urls)),
     path('token/login/', login),
     path('logout/', token),
 ]

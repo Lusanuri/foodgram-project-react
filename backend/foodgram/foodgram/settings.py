@@ -25,11 +25,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.postgres',
     'rest_framework',
     'rest_framework.authtoken',
-    'djoser',
     'django_filters',
+    'djoser',
 ]
 
 MIDDLEWARE = [
@@ -73,23 +72,15 @@ WSGI_APPLICATION = 'foodgram.wsgi.application'
 
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'mydatabase',
+    "default": {
+        "ENGINE": os.getenv("DB_ENGINE", default="django.db.backends.postgresql"),
+        "NAME": os.getenv("DB_NAME", default="postgres"),
+        "USER": os.getenv("POSTGRES_USER", default="postgres"),
+        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
+        "HOST": os.getenv("DB_HOST", default="db"),
+        "PORT": os.getenv("DB_PORT", default="5432"),
     }
 }
-
-
-#DATABASES = {
-#    "default": {
-#        "ENGINE": os.getenv("DB_ENGINE", default="django.db.backends.postgresql"),
-#        "NAME": os.getenv("DB_NAME", default="postgres"),
-#        "USER": os.getenv("POSTGRES_USER", default="postgres"),
-#        "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
-#        "HOST": os.getenv("DB_HOST", default="db"),
-#        "PORT": os.getenv("DB_PORT", default="5432"),
-#    }
-#}
 
 
 AUTH_PASSWORD_VALIDATORS = [
@@ -116,17 +107,12 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-STATIC_URL = 'static/'
-
-
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
-        'rest_framework.permissions.AllowAny',
+        'rest_framework.permissions.IsAuthenticatedOrReadOnly',
     ],
-
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
@@ -136,22 +122,25 @@ REST_FRAMEWORK = {
 }
 
 DJOSER = {
+    'SERIALIZERS':
+        {
+            'user_create': 'api.serializers.CustomUserCreateSerializer',
+            'user': 'api.serializers.CustomUserSerializer',
+            'current_user': 'api.serializers.CustomUserSerializer',
+        },
     'LOGIN_FIELD': 'email',
-    'SERIALIZERS': {
-        'user_create': 'api.serializers.CustomUserCreateSerializer',
-        'user': 'api.serializers.CustomUserSerializer',
-        'current_user': 'api.serializers.CustomUserSerializer',
-    },
+    'HIDE_USERS': False,
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']
-    },
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']}
 }
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
 
-MEDIA_URL = "/media/"
-MEDIA_ROOT = os.path.join(BASE_DIR, "media/")
+STATIC_URL = '/static/'
 
-STATIC_URL = "/static/"
-STATIC_ROOT = os.path.join(BASE_DIR, "static/")
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_URL = '/media/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
