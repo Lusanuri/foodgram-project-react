@@ -27,4 +27,3 @@ docker-compose exec backend python manage.py createsuperuser
 docker-compose exec backend python manage.py collectstatic --no-input
 docker-compose exec backend python manage.py import_ingredients
 docker-compose exec backend python manage.py import_tags
-Проект доступен по адресу http://localhost/
