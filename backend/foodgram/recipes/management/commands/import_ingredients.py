@@ -8,7 +8,7 @@ from recipes.models import Ingredient
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        filename = f"{settings.BASE_DIR}/../data/ingredients.csv"
+        filename = f"{settings.BASE_DIR}/data/ingredients.csv"
         ingredients_to_create = []
         with open(filename, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=('name', 'measurement_unit'))

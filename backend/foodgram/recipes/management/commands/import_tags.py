@@ -8,7 +8,7 @@ from recipes.models import Tag
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        filename = f"{settings.BASE_DIR}/../data/tags.csv"
+        filename = f"{settings.BASE_DIR}/data/tags.csv"
         tags_to_create = []
         with open(filename, "r", encoding="utf-8") as f:
             reader = csv.DictReader(f, fieldnames=('name', 'color', 'slug'))
