@@ -4,9 +4,10 @@ from django.contrib.auth import get_user_model
 from django.core.files.base import ContentFile
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
-from recipes.models import Ingredient, RecipeIngredient, Recipe, Tag
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
+
+from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
 
@@ -141,9 +142,10 @@ class RecipeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Recipe
-        fields = ("id", "tags", "author", "ingredients",
-                  "name", "text", "cooking_time", "image",
-                  "is_favorited", "is_in_shopping_cart"
+        fields = (
+                "id", "tags", "author", "ingredients",
+                "name", "text", "cooking_time", "image",
+                "is_favorited", "is_in_shopping_cart"
                 )
 
     # def filter_favorited(self, obj):
