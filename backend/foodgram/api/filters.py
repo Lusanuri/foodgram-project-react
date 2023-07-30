@@ -7,7 +7,7 @@ User = get_user_model()
 
 
 class IngredientFilter(SearchFilter):
-    search_param = 'name'
+    search_param = "name"
 
 
 class RecipeFilter(FilterSet):
