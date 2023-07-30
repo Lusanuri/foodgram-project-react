@@ -7,13 +7,13 @@ load_dotenv()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-SECRET_KEY = 'django-insecure-%#1=81hvtrg2wv_i#m26f^d=%i*16^64!fr#i4b&$7mgmwly02'
+SECRET_KEY = (
+    'django-insecure-%#1=81hvtrg2wv_i#m26f^d=%i*16^64!fr#i4b&$7mgmwly02'
+)
 
 DEBUG = os.environ.get("DEBUG") == "True"
 
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "*").split(",")
-
 
 INSTALLED_APPS = [
     'api',
@@ -70,10 +70,10 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-
 DATABASES = {
     "default": {
-        "ENGINE": os.getenv("DB_ENGINE", default="django.db.backends.postgresql"),
+        "ENGINE": os.getenv(
+            "DB_ENGINE", default="django.db.backends.postgresql"),
         "NAME": os.getenv("DB_NAME", default="postgres"),
         "USER": os.getenv("POSTGRES_USER", default="postgres"),
         "PASSWORD": os.getenv("POSTGRES_PASSWORD", default="postgres"),
@@ -82,22 +82,16 @@ DATABASES = {
     }
 }
 
-
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
+    {'NAME':
+     'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
+    {'NAME': 
+     'django.contrib.auth.password_validation.MinimumLengthValidator'},
+    {'NAME': 
+     'django.contrib.auth.password_validation.CommonPasswordValidator'},
+    {'NAME': 
+     'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
-
 
 LANGUAGE_CODE = 'en-us'
 
@@ -116,23 +110,22 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.TokenAuthentication',
     ],
-    "DEFAULT_PAGINATION_CLASS":
-        "rest_framework.pagination.PageNumberPagination",
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
     'PAGE_SIZE': 6,
 }
 
 DJOSER = {
-    'SERIALIZERS':
-        {
-            'user_create': 'api.serializers.CustomUserCreateSerializer',
-            'user': 'api.serializers.CustomUserSerializer',
-            'current_user': 'api.serializers.CustomUserSerializer',
-        },
+    'SERIALIZERS': {
+        'user_create': 'api.serializers.CustomUserCreateSerializer',
+        'user': 'api.serializers.CustomUserSerializer',
+        'current_user': 'api.serializers.CustomUserSerializer',
+    },
     'LOGIN_FIELD': 'email',
     'HIDE_USERS': False,
     'PERMISSIONS': {
         'user_list': ['rest_framework.permissions.IsAuthenticatedOrReadOnly'],
-        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']}
+        'user': ['rest_framework.permissions.IsAuthenticatedOrReadOnly']
+    },
 }
 
 CSRF_TRUSTED_ORIGINS = os.environ.get("CSRF_TRUSTED_ORIGINS", "http://localhost").split(",")
