@@ -6,7 +6,6 @@ from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
-
 from recipes.models import Ingredient, Recipe, RecipeIngredient, Tag
 
 User = get_user_model()
@@ -147,16 +146,6 @@ class RecipeSerializer(serializers.ModelSerializer):
                 "name", "text", "cooking_time", "image",
                 "is_favorited", "is_in_shopping_cart"
                 )
-
-    # def filter_favorited(self, obj):
-    #     user = self.context["request"].user
-    #     return user.is_authenticated and user.favorite.filter(
-    #         recipe=obj.id).exists()
-    #
-    # def filter_shopping_cart(self, obj):
-    #     user = self.context["request"].user
-    #     return user.is_authenticated and user.shopping_cart.filter(
-    #         recipe=obj.id).exists()
 
 
 class RecipeCreateSerializer(RecipeSerializer):
