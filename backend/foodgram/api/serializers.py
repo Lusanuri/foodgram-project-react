@@ -61,7 +61,7 @@ class SubscriptionSerializer(serializers.ModelSerializer):
     username = serializers.ReadOnlyField()
     first_name = serializers.ReadOnlyField()
     last_name = serializers.ReadOnlyField()
-    is_subscribed = serializers.SerializerMethodField()
+    is_subscribed = serializers.SerializerMethodField() 
     recipes = RecipeShortSerializer(read_only=True, many=True)
     recipes_count = serializers.IntegerField(source="recipes.count",
                                              read_only=True)
@@ -128,16 +128,6 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = serializers.SerializerMethodField()
     is_in_shopping_cart = serializers.SerializerMethodField()
 
-    def get_is_favorited(self, obj):
-        user = self.context['request'].user
-        return user.is_authenticated and user.favorite.filter(
-            recipe=obj.id).exists()
-
-    def get_is_in_shopping_cart(self, obj):
-        user = self.context['request'].user
-        return user.is_authenticated and user.shopping_cart.filter(
-            recipe=obj.id).exists()
-
     class Meta:
         model = Recipe
         fields = (
@@ -145,6 +135,16 @@ class RecipeSerializer(serializers.ModelSerializer):
             "name", "text", "cooking_time", "image",
             "is_favorited", "is_in_shopping_cart"
         )
+
+    def get_is_favorited(self, obj):
+        user = self.context['request'].user
+        return user.is_authenticated and user.favorite.filter(
+            recipe=obj.id).exists()
+
+    def get_is_in_shopping_cart(self, obj):
+        user = self.context['request'].user
+        return user.is_authenticated and user.cart.filter(
+            recipe=obj.id).exists()
 
 
 class RecipeCreateSerializer(RecipeSerializer):

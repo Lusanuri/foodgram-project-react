@@ -58,8 +58,8 @@ class IngredientsViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = IngredientSerializer
     queryset = Ingredient.objects.all()
     pagination_class = None
-    filter_backends = [IngredientFilter]
-    search_fields = ["^name"]
+    filter_backends = (IngredientFilter,)
+    search_fields = ("^name",)
 
 
 class RecipesViewSet(viewsets.ModelViewSet):
@@ -73,7 +73,6 @@ class RecipesViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action in ["create", "partial_update"]:
             return RecipeCreateSerializer
-        print('eeee')
         return RecipeSerializer
 
     @action(detail=True,
