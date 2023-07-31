@@ -32,7 +32,7 @@ docker-compose up -d
 
 - Для запуска сервера разработки выполните команды:
 ```
-docker-compose exec backend python manage.py makemigrateins
+docker-compose exec backend python manage.py makemigrations
 docker-compose exec backend python manage.py migrate
 docker-compose exec backend python manage.py createsuperuser
 docker-compose exec backend python manage.py collectstatic --no-input
