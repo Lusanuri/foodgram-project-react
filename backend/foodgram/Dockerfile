@@ -1,7 +1,5 @@
 FROM python:3.11.0-slim
 
-LABEL author="Bakirov Ruslan" version=1
-
 WORKDIR /app
 
 COPY requirements.txt .
